@@ -15,7 +15,7 @@ from app.api.validations.user import *
 from app.api.email_utils import send_email_verification_message
 from app.api.models.user import *
 from app.api.dao.user import UserDAO
-from app.api.resources.common import auth_header_parser
+from app.api.resources.common import auth_header_parser, refresh_auth_header_parser
 
 users_ns = Namespace("Users", description="Operations related to users")
 add_models_to_namespace(users_ns)
@@ -64,7 +64,7 @@ class UserList(Resource):
         doesn't take any other input. A JSON array having an object for each user is
         returned. The array contains id, username, name, slack_username, bio,
         location, occupation, organization, interests, skills, need_mentoring,
-        available_to_mentor. The current user's details are not returned.
+        available_to_mentor, registration_date. The current user's details are not returned.
         """
 
         page = request.args.get("page", default=UserDAO.DEFAULT_PAGE, type=int)
@@ -401,7 +401,7 @@ class RefreshUser(Resource):
             messages.AUTHORISATION_TOKEN_IS_MISSING,
         ),
     )
-    @users_ns.expect(auth_header_parser)
+    @users_ns.expect(refresh_auth_header_parser)
     def post(cls):
         """Refresh user's access
 
